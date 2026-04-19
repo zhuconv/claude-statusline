@@ -126,14 +126,25 @@ fi
 
 # ── Effort: live-read with 3-layer fallback ────────────
 # 1) transcript JSONL (most accurate for mid-session changes)
+#    Parses the user-visible text left by /effort and /model commands:
+#      "Set effort level to <value>"          (from /effort)
+#      "with <value> effort"                   (from /model; ANSI stripped)
+#    Uses `tail -r` (BSD/macOS) or `tac` (GNU) to read newest-first.
 # 2) CLAUDE_CODE_EFFORT_LEVEL env var (set at launch)
 # 3) ~/.claude/settings.json (stale; "max" is never persisted due to CC bug)
 effort=""
 transcript=$(echo "$input" | jq -r '.transcript_path // empty')
 if [ -n "$transcript" ] && [ -f "$transcript" ]; then
-    effort=$(tac "$transcript" 2>/dev/null | head -300 | \
-        grep -oE '"(effort|effortLevel|effortValue)"[[:space:]]*:[[:space:]]*"(low|medium|high|xhigh|max)"' | \
-        head -1 | grep -oE '(low|medium|high|xhigh|max)"$' | tr -d '"')
+    reversed=$({ tail -r "$transcript" 2>/dev/null || tac "$transcript" 2>/dev/null; } | head -500)
+    effort=$(printf '%s\n' "$reversed" | \
+        grep -oE 'Set effort level to (low|medium|high|xhigh|max)' | \
+        head -1 | awk '{print $NF}')
+    if [ -z "$effort" ]; then
+        effort=$(printf '%s\n' "$reversed" | \
+            sed 's/\\u001b\[[0-9;]*m//g' | \
+            grep -oE 'with[[:space:]]+(low|medium|high|xhigh|max)[[:space:]]+effort' | \
+            head -1 | awk '{print $2}')
+    fi
 fi
 if [ -z "$effort" ] && [ -n "$CLAUDE_CODE_EFFORT_LEVEL" ]; then
     effort="$CLAUDE_CODE_EFFORT_LEVEL"
