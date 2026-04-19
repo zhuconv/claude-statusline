@@ -1,9 +1,17 @@
 {
-  "name": "@kamranahmedse/claude-statusline",
-  "version": "1.0.6",
-  "description": "A status line for Claude Code CLI showing model, context usage, rate limits, and more",
+  "name": "claude-statusline-zhuconv",
+  "version": "1.0.0",
+  "description": "Customized Claude Code statusline with live effort detection and weekly usage",
   "bin": {
     "claude-statusline": "./bin/install.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhuconv/claude-statusline.git"
+  },
+  "homepage": "https://github.com/zhuconv/claude-statusline#readme",
+  "bugs": {
+    "url": "https://github.com/zhuconv/claude-statusline/issues"
   },
   "keywords": [
     "claude",
@@ -12,5 +20,5 @@
     "cli"
   ],
   "license": "MIT",
-  "author": "Kamran Ahmed"
+  "author": "Kamran Ahmed (original), zhuconv (customizations)"
 }
