@@ -63,8 +63,8 @@ format_epoch_time() {
             result=$(echo "$result" | sed 's/^ //; s/\.//g' | tr '[:upper:]' '[:lower:]')
             ;;
         datetime)
-            result=$(date -j -r "$epoch" +"%b %-d, %l:%M%p" 2>/dev/null)
-            [ -z "$result" ] && result=$(date -d "@$epoch" +"%b %-d, %l:%M%p" 2>/dev/null)
+            result=$(date -j -r "$epoch" +"%b %-d, %l:%M %p" 2>/dev/null)
+            [ -z "$result" ] && result=$(date -d "@$epoch" +"%b %-d, %l:%M %p" 2>/dev/null)
             # Keep month capitalized (Apr), only lowercase AM/PM
             result=$(echo "$result" | sed 's/  / /g; s/^ //; s/\.//g; s/AM/am/g; s/PM/pm/g')
             ;;
